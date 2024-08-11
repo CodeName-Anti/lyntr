@@ -37,6 +37,11 @@
 				throw new Error(`HTTP error! status: ${response.status}`);
 			}
 			searchResults = await response.json();
+			if (searchQuery === "users") {
+				searchResults.type = "users";
+			} else {
+				searchResults.type = "lynts";
+			}
 		} catch (error) {
 			console.error('Search error:', error);
 			toast('Failed to perform search. Please try again.');

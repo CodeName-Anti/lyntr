@@ -85,6 +85,10 @@
 			searchQuery = "from:@" + myHandle;
 			performSearch();
 		}} class="ml-2">You</Button>
+		<Button on:click={() => {
+			searchQuery = "users";
+			performSearch();
+		}} class="ml-2">You</Button>
 	</div>
 	<div class="w-full flex-grow overflow-hidden">
 		<div class="h-full overflow-y-auto overflow-x-hidden">

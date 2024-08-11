@@ -88,7 +88,7 @@
 		<Button on:click={() => {
 			searchQuery = "users";
 			performSearch();
-		}} class="ml-2">You</Button>
+		}} class="ml-2">Users</Button>
 	</div>
 	<div class="w-full flex-grow overflow-hidden">
 		<div class="h-full overflow-y-auto overflow-x-hidden">

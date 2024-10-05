@@ -1,7 +1,13 @@
 {
-    "name": "",
-    "short_name": "",
+    "name": "Lyntr",
+    "short_name": "Lyntr",
+    "start_url": "https://lyntr.jnnj.xyz/",
     "icons": [
+        {
+            "src": "/android-chrome-144x144.png",
+            "sizes": "144x144",
+            "type": "image/png"
+        },
         {
             "src": "/android-chrome-192x192.png",
             "sizes": "192x192",
@@ -13,7 +19,7 @@
             "type": "image/png"
         }
     ],
-    "theme_color": "#ffffff",
-    "background_color": "#ffffff",
+    "theme_color": "#f00000",
+    "background_color": "#f00000",
     "display": "standalone"
 }

@@ -5,8 +5,8 @@ import { Snowflake } from 'nodejs-snowflake';
 
 import { verifyAuthJWT, createAuthJWT } from '@/server/jwt';
 import { db } from '@/server/db';
-import { followers, likes, lynts, notifications, users, history } from '@/server/schema';
-import { eq, inArray, sql } from 'drizzle-orm';
+import { followers, likes, lynts, notifications, users, history, messages } from '@/server/schema';
+import { and, eq, sql } from 'drizzle-orm';
 import { minioClient } from '@/server/minio';
 import { deleteLynt, uploadAvatar } from '../util';
 import { readFileSync } from 'fs';
@@ -118,8 +118,8 @@ let questions: Question[] = [
 	},
 	{
 		id: 'British',
-		condition: (_: any) => {
-			return 0;
+		condition: (input: any) => {
+			return sanitizeBool(input) ? -10 : 1;
 		}
 	},
 	{
@@ -213,7 +213,8 @@ export const POST: RequestHandler = async ({
 		const cleanedHandle = body.handle.replace(/[^0-9a-z_-]/gi, '').toLowerCase();
 
 		const jwt = await createAuthJWT({
-			userId: uniqueUserId
+			userId: uniqueUserId,
+			timestamp: Date.now()
 		});
 
 		const [newLynt] = await db
@@ -263,25 +264,29 @@ export const GET: RequestHandler = async ({ url }) => {
 	}
 
 	try {
-		const query = sql`
-            SELECT 
-                u.id, 
-                u.handle, 
-                u.created_at, 
-                u.username, 
-                u.iq, 
-                u.verified,
-                u.bio,
-                (SELECT COUNT(*) FROM ${followers} WHERE user_id = u.id) AS followers_count,
-                (SELECT COUNT(*) FROM ${followers} WHERE follower_id = u.id) AS following_count
-            FROM ${users} u
-            WHERE ${userHandle ? sql`u.handle = ${userHandle}` : sql`u.id = ${userId}`} AND u.banned = false
-            LIMIT 1
-        `;
 
-		const result = await db.execute(query);
-		const user = result[0];
-
+		const response = await db
+			.select({
+				id: users.id,
+				handle: users.handle,
+				created_at: users.created_at,
+				username: users.username,
+				iq: users.iq,
+				verified: users.verified,
+				bio: users.bio,
+				followers_count: sql`(SELECT COUNT(*) FROM ${followers} WHERE ${followers.user_id} = ${users.id})`.as('followers_count'),
+				following_count: sql`(SELECT COUNT(*) FROM ${followers} WHERE ${followers.follower_id} = ${users.id})`.as('following_count'),
+			})
+			.from(users)
+			.where(
+				and(
+					userHandle ? eq(users.handle, userHandle) : eq(users.id, userId!),
+					eq(users.banned, false)
+				)
+			)
+			.limit(1);
+		
+		const user = response[0];
 		if (!user) {
 			return json({ error: 'User not found' }, { status: 404 });
 		}
@@ -384,6 +389,13 @@ export const DELETE: RequestHandler = async ({ request, cookies }) => {
 		await db.transaction(async (tx) => {
 			// Delete notifications
 			console.log('Account deletion - ' + userId);
+
+			// Delete messages
+			console.time('Deleting all messages');
+			await tx.delete(messages).where(eq(messages.sender_id, userId));
+			await tx.delete(messages).where(eq(messages.receiver_id, userId));
+			console.timeEnd('Deleting all messages');
+
 			console.time('Getting all lynts');
 			const userLynts = await tx
 				.select({ id: lynts.id })

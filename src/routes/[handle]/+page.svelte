@@ -24,8 +24,22 @@
 	};
 
 	async function checkAuthAndProfileStatus() {
-		if (Cookies.get('temp-discord-token'))
+		if (Cookies.get('temp-discord-token')) {
 			authenticated = true;
+		}
+
+		if (localStorage.getItem('user-data')) {
+			try {
+				const data = JSON.parse(localStorage.getItem('user-data')!);
+				loading = false;
+				noAccount = false;
+				userData = data;
+				authenticated = true;
+			} catch (error) {
+				console.error('Failed to load user data from cache', error);
+			}
+		}
+
 		try {
 			const response = await fetch('/api/me', {
 				method: 'GET',

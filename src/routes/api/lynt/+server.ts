@@ -55,7 +55,7 @@ export const POST: RequestHandler = async ({
 	
 	if (!content) content = '';
 
-	if (content.length > 280 || (content.trim() == '' && !hasImageOrRepost)) {
+	if (content.length > 380 || (content.trim() == '' && !hasImageOrRepost)) {
 		return json({ error: 'Invalid content' }, { status: 400 });
 	}
 

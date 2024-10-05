@@ -5,7 +5,7 @@ CREATE TABLE IF NOT EXISTS "followers" (
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "history" (
-	"id" text PRIMARY KEY NOT NULL,
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"user_id" text,
 	"lynt_id" text,
 	"created_at" timestamp DEFAULT now()
@@ -14,6 +14,7 @@ CREATE TABLE IF NOT EXISTS "history" (
 CREATE TABLE IF NOT EXISTS "likes" (
 	"lynt_id" text NOT NULL,
 	"user_id" text NOT NULL,
+	"liked_at" timestamp DEFAULT now(),
 	CONSTRAINT "likes_pkey" PRIMARY KEY("lynt_id","user_id")
 );
 --> statement-breakpoint
@@ -28,6 +29,17 @@ CREATE TABLE IF NOT EXISTS "lynts" (
 	"created_at" timestamp DEFAULT now(),
 	"reposted" boolean DEFAULT false,
 	"parent" text
+);
+--> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "messages" (
+	"id" bigserial PRIMARY KEY NOT NULL,
+	"sender_id" text,
+	"receiver_id" text,
+	"content" text NOT NULL,
+	"image" text,
+	"referenced_lynt_id" text,
+	"read" boolean DEFAULT false,
+	"created_at" timestamp DEFAULT now()
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "notifications" (
@@ -103,6 +115,24 @@ EXCEPTION
 END $$;
 --> statement-breakpoint
 DO $$ BEGIN
+ ALTER TABLE "messages" ADD CONSTRAINT "messages_sender_id_users_id_fk" FOREIGN KEY ("sender_id") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "messages" ADD CONSTRAINT "messages_receiver_id_users_id_fk" FOREIGN KEY ("receiver_id") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "messages" ADD CONSTRAINT "messages_referenced_lynt_id_lynts_id_fk" FOREIGN KEY ("referenced_lynt_id") REFERENCES "public"."lynts"("id") ON DELETE no action ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
  ALTER TABLE "notifications" ADD CONSTRAINT "notifications_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
@@ -120,4 +150,5 @@ EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
 --> statement-breakpoint
-CREATE UNIQUE INDEX IF NOT EXISTS "unique_user_lynt" ON "history" USING btree ("user_id","lynt_id");
+CREATE UNIQUE INDEX IF NOT EXISTS "unique_user_lynt" ON "history" USING btree ("user_id","lynt_id");--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "created_at_idx" ON "messages" USING btree ("created_at");

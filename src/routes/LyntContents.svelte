@@ -4,7 +4,7 @@
 	import * as HoverCard from '@/components/ui/hover-card/index.js';
 	import Avatar from './Avatar.svelte';
 	import { mode } from 'mode-watcher';
-	import { cdnUrl } from './stores';
+	import { cdnUrl, currentPage } from './stores';
 
 	import CalendarDays from 'lucide-svelte/icons/calendar-days';
 	import * as Popover from '@/components/ui/popover';
@@ -17,6 +17,7 @@
 	import DOMPurify from 'dompurify';
 	import { page } from '$app/stores';
 	import { Button } from '@/components/ui/button';
+	import { goto } from '$app/navigation';
 
 	function getTimeElapsed(date: Date | string) {
 		if (typeof date === 'string') date = new Date(date);
@@ -147,9 +148,15 @@
 						class="truncate {smaller
 							? 'max-w-[30%]'
 							: 'max-w-[30%] md:max-w-[50%]'} rounded-sm text-xl font-bold underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-8 focus-visible:outline-black"
-						href="/@{handle}"
 					>
-						{username}
+						<a href="/@{handle}"
+							on:click={() => {
+								currentPage.set(`profile${handle}`);
+								goto(`/@${handle}`, { replaceState: true, noScroll: true });
+							}}
+						>
+							{username}
+						</a>
 					</HoverCard.Trigger>
 					<HoverCard.Content class="flex w-80 flex-row items-center gap-2">
 						<div class="flex justify-between space-x-4">
@@ -206,7 +213,7 @@
 							<div class="space-y-1">
 								<h4 class="text-sm font-semibold">{username}</h4>
 								<h4 class="text-sm font-semibold">@{handle}</h4>
-								<p class="text-sm">Cybernetically enhanced web apps.</p>
+								<p class="text-sm">{bio}</p>
 								<div class="flex items-center pt-2">
 									<CalendarDays class="mr-2 h-4 w-4 opacity-70" />
 									<span class="text-xs text-muted-foreground">

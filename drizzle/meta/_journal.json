@@ -5,22 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1722082976380,
-      "tag": "0000_happy_norman_osborn",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1722220455698,
-      "tag": "0001_overrated_deadpool",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1722730351277,
-      "tag": "0002_goofy_prism",
+      "when": 1724846015317,
+      "tag": "0000_outstanding_sway",
       "breakpoints": true
     }
   ]

@@ -53,7 +53,7 @@ export const POST: RequestHandler = async ({
 	const imageFile = formData.get('image') as File | null;
 
 	if (typeof content !== 'string' ||
-		content.length > 280 ||
+		content.length > 380 ||
 		(content.trim() == '' && imageFile == null)) {
 		return json({ error: 'Invalid content' }, { status: 400 });
 	}

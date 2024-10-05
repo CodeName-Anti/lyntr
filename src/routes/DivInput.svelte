@@ -3,7 +3,7 @@
 
 	export let lynt: string = '';
 	export let placeholder: string = "What's happening?";
-	export let maxLength: number = 280;
+	export let maxLength: number = 380;
 	export let charactersBeforeCount = 0;
 
 	let className: string = "";

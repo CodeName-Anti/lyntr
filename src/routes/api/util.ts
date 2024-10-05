@@ -1,5 +1,5 @@
 import { db } from '@/server/db';
-import { lynts, likes, followers, users, notifications, history } from '@/server/schema';
+import { lynts, likes, followers, users, notifications, history, messages } from '@/server/schema';
 import { and, eq, inArray, sql } from 'drizzle-orm';
 import sharp from 'sharp';
 
@@ -183,6 +183,9 @@ export async function deleteLynt(lyntId: string) {
 
 		// Delete all comments under this lynt
 		await trx.delete(lynts).where(and(eq(lynts.parent, lyntId), eq(lynts.reposted, false)));
+
+		// Delete all message references of this lynt
+		await trx.delete(messages).where(eq(messages.referencedLyntId, lyntId));
 
 		// Update reposts of this lynt
 		await trx

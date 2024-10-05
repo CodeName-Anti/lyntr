@@ -2,6 +2,7 @@
 	import { cdnUrl } from './stores';
 	import { Separator } from '@/components/ui/separator';
 	import { page } from '$app/stores';
+	import { currentPage } from './stores';
 
 	import { BarChart2, Heart, ImageUp, MessageCircle, Repeat2, Share2, Copy } from 'lucide-svelte';
 	import * as Dialog from '@/components/ui/dialog/index';
@@ -17,6 +18,7 @@
 	import { toast } from 'svelte-sonner';
 	import LyntContents from './LyntContents.svelte';
 	import DivInput from './DivInput.svelte';
+	import { goto } from '$app/navigation';
 
 	function formatNumber(num: number): string {
 		if (!num) return '0';
@@ -325,7 +327,12 @@
 	<div
 		class="flex w-full gap-3 overflow-hidden rounded-xl bg-lynt-foreground p-3 transition-colors hover:bg-border"
 	>
-		<a href="/@{handle}" class="inline-block max-h-[40px] min-w-[40px]">
+		<a href="/@{handle}" class="inline-block max-h-[40px] min-w-[40px]"
+			on:click={() => {
+				currentPage.set(`profile${handle}`);
+				goto(`/@${handle}`, { replaceState: true, noScroll: true });
+			}}
+		>
 			<Avatar size={10} src={cdnUrl(userId, 'small')} alt="A profile picture." />
 		</a>
 

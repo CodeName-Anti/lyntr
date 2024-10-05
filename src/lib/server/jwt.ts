@@ -35,7 +35,7 @@ export const verifyAuthJWT = async (token: string) => {
 			new TextEncoder().encode(process.env.JWT_SECRET)
 		);
 
-		const user = await db.select().from(users).where(eq(users.id, payload.userId)).limit(1);
+		const user = await db.select().from(users).where(eq(users.id, String(payload.userId))).limit(1);
 
 		if (!user[0]) {
 			throw error(401, 'Invalid token.');
@@ -44,8 +44,6 @@ export const verifyAuthJWT = async (token: string) => {
 		if (user[0].banned) {
 			throw error(403, 'You are banned.');
 		}
-
-		
 
 		return payload as JWTPayload;
 	} catch (error) {

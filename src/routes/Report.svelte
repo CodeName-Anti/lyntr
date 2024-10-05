@@ -4,9 +4,8 @@
 	import { Label } from '@/components/ui/label';
 	import { Textarea } from '@/components/ui/textarea';
 	import { Flag } from 'lucide-svelte';
-	import { toast } from 'svelte-sonner';
 
-	let min = 50;
+	let min = 20;
 	let max = 2000;
 
 	let opened = false;

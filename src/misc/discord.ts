@@ -175,9 +175,9 @@ async function createReportEmbed(
 			},
 			{ name: 'Reporter', value: `${reporter.username} (@${reporter.handle})`, inline: true },
 			{ name: 'Lynt Content', value: reportedLynt.content || 'N/A' },
-			{ name: 'Lynt ID', value: reportedLynt.id },
-			{ name: 'User ID', value: reportedUser.id },
-			{ name: 'Reporter ID', value: reporter.id }
+			{ name: 'Lynt ID', value: `[${reportedLynt.id}](https://lyntr.jnnj.xyz/?id=${reportedLynt.id})` },
+			{ name: 'User ID', value: `[${reportedUser.id}](https://lyntr.jnnj.xyz/@${reportedUser.handle})` },
+			{ name: 'Reporter ID', value: `[${reporter.id}](https://lyntr.jnnj.xyz/@${reporter.handle})` }
 		)
 		.setTimestamp();
 

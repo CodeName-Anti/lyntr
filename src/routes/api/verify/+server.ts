@@ -3,7 +3,7 @@ import type { RequestHandler } from '@sveltejs/kit';
 
 import { db } from '@/server/db';
 import { users } from '@/server/schema';
-import { eq } from 'drizzle-orm';
+import { eq, not } from 'drizzle-orm';
 
 export const POST: RequestHandler = async ({ request, cookies, url }) => {
 	const admin = request.headers.get('Authorization');
@@ -19,7 +19,9 @@ export const POST: RequestHandler = async ({ request, cookies, url }) => {
 	try {
 		const [updatedUser] = await db
 			.update(users)
-			.set({ verified: true })
+			.set({
+				verified: not(users.verified)
+			})
 			.where(eq(users.handle, handle))
 			.returning();
 
@@ -27,12 +29,7 @@ export const POST: RequestHandler = async ({ request, cookies, url }) => {
 			return json({ error: 'User not found' }, { status: 404 });
 		}
 
-		return json(
-			{
-				message: 'User verified successfully.'
-			},
-			{ status: 200 }
-		);
+		return json({ message: `User ${updatedUser.verified ? 'verified' : 'unverified'} successfully.` }, { status: 200 });
 	} catch (error) {
 		console.error('Error updating user:', error);
 		return json({ error: 'Failed to update user' }, { status: 500 });

@@ -10,8 +10,6 @@ services:
     restart: always
     secrets:
       - serverEnv
-    ports:
-      - '5444:5444'
     networks:
       - lynternet
 
@@ -29,6 +27,7 @@ services:
       - MINIO_ROOT_USER=${MINIO_USER}
       - MINIO_ROOT_PASSWORD=${MINIO_PASS}
     command: server --console-address :9001 /data
+
   website:
     restart: unless-stopped
     platform: linux/x86_64
@@ -48,6 +47,7 @@ services:
       - 'host.docker.internal:host-gateway'
     networks:
       - lynternet
+      
   db:
     image: postgres:16.2-alpine
     restart: always

@@ -37,6 +37,11 @@
 				throw new Error(`HTTP error! status: ${response.status}`);
 			}
 			searchResults = await response.json();
+			if (searchQuery === "users") {
+				searchResults.type = "users";
+			} else {
+				searchResults.type = "lynts";
+			}
 		} catch (error) {
 			console.error('Search error:', error);
 			toast('Failed to perform search. Please try again.');
@@ -80,6 +85,10 @@
 			searchQuery = "from:@" + myHandle;
 			performSearch();
 		}} class="ml-2">You</Button>
+		<Button on:click={() => {
+			searchQuery = "users";
+			performSearch();
+		}} class="ml-2">Users</Button>
 	</div>
 	<div class="w-full flex-grow overflow-hidden">
 		<div class="h-full overflow-y-auto overflow-x-hidden">

@@ -1,6 +1,6 @@
 import { json } from '@sveltejs/kit';
 import tf, { type Tensor3D } from '@tensorflow/tfjs-node';
-import nsfw from 'nsfwjs';
+import * as nsfwjs from "nsfwjs";
 import { db } from './server/db';
 import { lynts, users } from './server/schema';
 import { eq } from 'drizzle-orm';
@@ -22,7 +22,7 @@ export const NSFW_ERROR = json(
 );
 
 tf.enableProdMode();
-const model = await nsfw.load();
+const model = await nsfwjs.load();
 
 export async function isImageNsfw(image: Buffer) {
 	const { data, info } = await sharp(image)
